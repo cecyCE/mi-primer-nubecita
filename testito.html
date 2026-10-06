@@ -1,1 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¿Qué tan Gay eres? - Gay Test Interactivo</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        darkBg: '#0f172a',
+                        cardBg: '#1e293b',
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                        'bounce-short': 'bounceShort 0.5s ease infinite alternate',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.6, transform: 'scale(1)' },
+                            '50%': { opacity: 1, transform: 'scale(1.05)' },
+                        },
+                        bounceShort: {
+                            '0%': { transform: 'translateY(0)' },
+                            '100%': { transform: 'translateY(-6px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
+    <style>
+        /* Custom animated gradient text */
+        .rainbow-text {
+            background: linear-gradient(90deg, #ff4b4b, #ff8f00, #e6c200, #2eb85c, #0088ff, #7c3aed, #d946ef);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: rainbowMove 4s linear infinite;
+        }
+
+        @keyframes rainbowMove {
+            0% { background-position: 0% center; }
+            100% { background-position: 200% center; }
+        }
+
+        .gradient-border {
+            position: relative;
+            border-radius: 1rem;
+            background: #1e293b;
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, #ff007f, #7928ca, #00dfd8, #ff007f);
+            border-radius: 1.1rem;
+            z-index: -1;
+            background-size: 400%;
+            animation: borderGlow 8s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 100%; }
+            100% { background-position: 0% 0%; }
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        /* Smooth card transitions */
+        .fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-darkBg text-white min-h-screen flex flex-col justify-between font-sans selection:bg-pink-500 selection:text-white">
+
+    <header class="p-4 text-center">
+        <div class="inline-flex items-center gap-2 bg-slate-800/80 px-4 py-1.5 rounded-full border border-slate-700 text-xs text-slate-300">
+            <span class="w-2 h-2 rounded-full bg-pink-500 animate-ping"></span>
+            <span>Test de Personalidad v2.0 • 100% Diversión</span>
+        </div>
+    </header>
+
+    <main class="w-full max-w-xl mx-auto px-4 py-6 flex-1 flex flex-col justify-center">
+
+        <!-- ================= START SCREEN ================= -->
+        <div id="start-screen" class="gradient-border p-6 sm:p-10 text-center glass-card shadow-2xl fade-in">
+            <div class="text-5xl sm:text-6xl mb-4 animate-bounce-short">✨🌈✨</div>
+            <h1 class="text-3xl sm:text-5xl font-black mb-4 tracking-tight leading-tight">
+                ¿Qué tan <span class="rainbow-text">GAY</span> eres?
+            </h1>
+            <p class="text-slate-300 text-base sm:text-lg mb-8 leading-relaxed">
+                Descubre en qué punto del espectro arcoíris te encuentras con nuestro test ultrasecreto y nada científico. 💅✨
+            </p>
+
+            <button id="start-btn" class="w-full py-4 px-8 rounded-xl font-extrabold text-lg bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 hover:opacity-95 transform transition hover:-translate-y-0.5 active:translate-y-0 shadow-lg shadow-pink-500/25 flex items-center justify-center gap-3">
+                <span>Comenzar Test</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- ================= QUIZ SCREEN ================= -->
+        <div id="quiz-screen" class="hidden glass-card border border-slate-700 rounded-2xl p-6 sm:p-8 shadow-2xl fade-in">
+            
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between items-center text-xs font-semibold text-slate-400 mb-2">
+                    <span id="question-tracker">Pregunta 1 de 6</span>
+                    <span id="progress-percent" class="text-pink-400">0%</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                    <div id="progress-bar" class="bg-gradient-to-r from-pink-500 to-purple-500 h-2.5 rounded-full transition-all duration-300 w-0"></div>
+                </div>
+            </div>
+
+            <!-- Question Title -->
+            <h2 id="question-text" class="text-xl sm:text-2xl font-bold mb-6 text-slate-100 leading-snug">
+                Cargando pregunta...
+            </h2>
+
+            <!-- Options Container -->
+            <div id="options-container" class="space-y-3">
+                <!-- Dynamically injected buttons go here -->
+            </div>
+        </div>
+
+        <!-- ================= RESULT SCREEN ================= -->
+        <div id="result-screen" class="hidden gradient-border p-6 sm:p-10 text-center glass-card shadow-2xl fade-in">
+            <div id="result-emoji" class="text-6xl mb-3">🎉</div>
+            <p class="text-slate-400 text-xs uppercase tracking-widest font-bold mb-1">Tu resultado oficial</p>
+
+            <!-- Score Badge -->
+            <div class="inline-block bg-slate-800 border border-slate-700 px-6 py-2 rounded-full my-3">
+                <span id="result-percentage" class="text-4xl sm:text-5xl font-black rainbow-text">0%</span>
+                <span class="text-xs font-semibold text-slate-400 block uppercase tracking-wider">Rainbow Level</span>
+            </div>
+
+            <h2 id="result-title" class="text-2xl sm:text-3xl font-extrabold text-white mt-3 mb-4">
+                Diagnóstico
+            </h2>
+
+            <p id="result-desc" class="text-slate-300 text-sm sm:text-base leading-relaxed mb-8 bg-slate-800/50 p-4 rounded-xl border border-slate-700/50">
+                Cargando descripción...
+            </p>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button id="restart-btn" class="flex-1 py-3.5 px-6 rounded-xl font-bold bg-slate-800 hover:bg-slate-700 border border-slate-600 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Repetir Test</span>
+                </button>
+                <button id="share-btn" class="flex-1 py-3.5 px-6 rounded-xl font-bold bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-copy"></i>
+                    <span>Copiar Resultado</span>
+                </button>
+            </div>
+            <p id="toast-msg" class="text-xs text-green-400 mt-3 opacity-0 transition-opacity">¡Copiado al portapapeles!</p>
+        </div>
+
+    </main>
+
+    <footer class="p-4 text-center text-xs text-slate-500">
+        Hecho con ✨ para pasar un buen rato • Respuestas 100% confidenciales (bueno, en realidad ni las guardamos)
+    </footer>
+
+    <script>
+        // Data Questions
+        const questions = [
+            {
+                question: "Suena 'Rain On Me' de Lady Gaga y Ariana Grande en una fiesta. Tú...",
+                options: [
+                    { text: "Sigo tomando mi bebida tranquilamente.", score: 0 },
+                    { text: "Tarareo un poco si la conozco.", score: 10 },
+                    { text: "Me levanto a bailar emocionado/a.", score: 20 },
+                    { text: "Hago la coreografía completa bajo una lluvia imaginaria.", score: 30 }
+                ]
+            },
+            {
+                question: "¿Cuál es tu pose predeterminada al tomarte una foto?",
+                options: [
+                    { text: "Sonrisa normal con brazos a los lados.", score: 0 },
+                    { text: "Pulgar arriba o señal de paz (✌️).", score: 10 },
+                    { text: "Mano en la cintura o mirando hacia otro lado espontáneamente.", score: 20 },
+                    { text: "Pose de diva, boca entreabierta y dedos en forma de tijera.", score: 30 }
+                ]
+            },
+            {
+                question: "Alguien te cuenta un chisme explosivo. Tu reacción inmediata es:",
+                options: [
+                    { text: "'Ah, qué loco.'", score: 0 },
+                    { text: "'No te creo, ¿en serio?'", score: 10 },
+                    { text: "Mano en la boca y cara de shock dramático.", score: 20 },
+                    { text: "'¡Mientes! ¡CUÉNTAME TODO CON DETALLES YAAAA!'", score: 30 }
+                ]
+            },
+            {
+                question: "¿Cómo reaccionas cuando entra un perrito tierno a la habitación?",
+                options: [
+                    { text: "Lo miro y sigo en lo mío.", score: 0 },
+                    { text: "Lo acaricio un rato.", score: 10 },
+                    { text: "Hablo con voz agudita diciendo '¡Ay qué hermoso!'", score: 20 },
+                    { text: "Sufro un colapso emocional de ternura y me tiro al suelo a abrazarlo.", score: 30 }
+                ]
+            },
+            {
+                question: "¿Cuál de estos elementos domina tu estética personal?",
+                options: [
+                    { text: "Jeans, playera neutra y calzado cómodo.", score: 0 },
+                    { text: "Ropa limpia, bien combinada y un toque de perfume.", score: 10 },
+                    { text: "Accesorios llamativos, skincare de 5 pasos y cortes en tendencia.", score: 20 },
+                    { text: "Brillo, colores estridentes, outfits icónicos y presencia escénica.", score: 30 }
+                ]
+            },
+            {
+                question: "Al caminar por la calle con prisa, tu ritmo es:",
+                options: [
+                    { text: "Normal, me tomo mi tiempo.", score: 0 },
+                    { text: "Rápido si voy tarde.", score: 10 },
+                    { text: "Paso firme y acelerado, la gente estorba.", score: 20 },
+                    { text: "Paso de pasarela a 120 km/h al ritmo de música pop en mi cabeza.", score: 30 }
+                ]
+            }
+        ];
+
+        // Diagnostic categories
+        const resultsData = [
+            {
+                min: 0,
+                max: 25,
+                percentage: "15%",
+                title: "Hetero de Manual / Neutral Básico",
+                emoji: "🥑",
+                desc: "Eres una persona sobria, tranquila y quizás un poco inmune a los efectos del pop bailable. Tu nivel arcoíris es discreto, pero seguro que aprecias una buena caminata o un café sin complicaciones."
+            },
+            {
+                min: 26,
+                max: 50,
+                percentage: "45%",
+                title: "Aliado Supremo / Hetero Curioso por el Arte",
+                emoji: "✨",
+                desc: "Tienes el equilibrio perfecto. Disfrutas el buen chisme, aprecias la buena música y sabes perfectamente quién es Britney Spears. Tienes vibras amigables e incluyentes."
+            },
+            {
+                min: 51,
+                max: 75,
+                percentage: "75%",
+                title: "Icono Pop / Glamour en Potencia",
+                emoji: "💅",
+                desc: "¡Sube el volumen! Tienes un radar refinado para la moda, la estética y el drama divertido. Tu caminata tiene ritmo propio y las fiestas mejoran un 200% cuando tú llegas."
+            },
+            {
+                min: 76,
+                max: 100,
+                percentage: "100%",
+                title: "Arcoíris Supremo / Leyenda Gay / Diva Absoluta",
+                emoji: "👑🌈",
+                desc: "¡Ríndanle homenaje! Rebosante de brillo, drama, pasarela y energía pura. Lady Gaga te usaría como inspiración y tus reacciones son dignas de convertirse en memes legendarios."
+            }
+        ];
+
+        // State Variables
+        let currentQuestionIndex = 0;
+        let totalScore = 0;
+        const maxPossibleScore = questions.length * 30;
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const shareBtn = document.getElementById('share-btn');
+
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionTracker = document.getElementById('question-tracker');
+        const progressPercent = document.getElementById('progress-percent');
+        const progressBar = document.getElementById('progress-bar');
+
+        const resultPercentage = document.getElementById('result-percentage');
+        const resultTitle = document.getElementById('result-title');
+        const resultDesc = document.getElementById('result-desc');
+        const resultEmoji = document.getElementById('result-emoji');
+        const toastMsg = document.getElementById('toast-msg');
+
+        // Event Listeners
+        startBtn.addEventListener('click', startQuiz);
+        restartBtn.addEventListener('click', restartQuiz);
+        shareBtn.addEventListener('click', copyResults);
+
+        // Functions
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            totalScore = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = questions[currentQuestionIndex];
+            
+            // Update Progress
+            const progress = Math.round((currentQuestionIndex / questions.length) * 100);
+            progressBar.style.width = `${progress}%`;
+            progressPercent.textContent = `${progress}%`;
+            questionTracker.textContent = `Pregunta ${currentQuestionIndex + 1} de ${questions.length}`;
+
+            // Set Text
+            questionText.textContent = q.question;
+
+            // Clear and render options
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt) => {
+                const button = document.createElement('button');
+                button.className = "w-full text-left p-4 rounded-xl bg-slate-800/80 hover:bg-slate-700 border border-slate-700 hover:border-pink-500/50 transition duration-200 flex items-center justify-between group active:scale-[0.99]";
+                
+                button.innerHTML = `
+                    <span class="text-slate-200 font-medium group-hover:text-white transition">${opt.text}</span>
+                    <i class="fa-solid fa-chevron-right text-slate-500 group-hover:text-pink-400 group-hover:translate-x-1 transition-all"></i>
+                `;
+
+                button.addEventListener('click', () => selectOption(opt.score));
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectOption(score) {
+            totalScore += score;
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            // Calculate percentage based on max score
+            const normalizedPercent = Math.round((totalScore / maxPossibleScore) * 100);
+
+            // Find matching category
+            const category = resultsData.find(res => normalizedPercent >= res.min && normalizedPercent <= res.max) || resultsData[resultsData.length - 1];
+
+            // Render Results
+            resultPercentage.textContent = `${normalizedPercent}%`;
+            resultTitle.textContent = category.title;
+            resultDesc.textContent = category.desc;
+            resultEmoji.textContent = category.emoji;
+        }
+
+        function restartQuiz() {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        function copyResults() {
+            const textToCopy = `✨ ¡Hice el Test Gay Interactivo! ✨\nResultados: ${resultPercentage.textContent} Rainbow Level (${resultTitle.textContent}).\n¡Haz el tuyo también! 🌈`;
+            
+            // Clipboard copy workaround
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+
+            // Toast feedback
+            toastMsg.classList.remove('opacity-0');
+            setTimeout(() => {
+                toastMsg.classList.add('opacity-0');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
